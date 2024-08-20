@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Combined Application</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+
+        .navbar {
+            background-color: #007bff;
+            overflow: hidden;
+            padding: 10px 20px;
+        }
+
+        .navbar a {
+            float: left;
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 20px;
+            text-decoration: none;
+            font-size: 17px;
+        }
+
+        .navbar a:hover {
+            background-color: #0056b3;
+            color: white;
+        }
+
+        .container {
+            padding: 20px;
+            max-width: 400px;
+            margin: 50px auto;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        input,
+        button,
+        select {
+            margin: 10px 0;
+            padding: 12px;
+            font-size: 16px;
+            width: 100%;
+            box-sizing: border-box;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .result,
+        .error {
+            margin-top: 15px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .error {
+            color: red;
+        }
+
+        #calculator,
+        #personObject,
+        #sumEvenNumbers {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navigation Bar -->
+    <div class="navbar">
+        <a href="#" onclick="showPage('calculator')">Calculator</a>
+        <a href="#" onclick="showPage('personObject')">Person Object</a>
+        <a href="#" onclick="showPage('sumEvenNumbers')">Sum of Even Numbers</a>
+    </div>
+
+    <!-- Calculator Section -->
+    <div class="container" id="calculator">
+        <h2>Simple Calculator</h2>
+        <input type="number" id="num1" placeholder="Number 1">
+        <input type="number" id="num2" placeholder="Number 2">
+        <select id="operator">
+            <option value="+">+(Add)</option>
+            <option value="-">-(Subtract)</option>
+            <option value="*">*(Multiply)</option>
+            <option value="/">/ (Divide)</option>
+        </select>
+        <button onclick="calculator.calculate()">Calculate</button>
+        <div class="result" id="calcResult"></div>
+    </div>
+
+    <!-- Person Object Section -->
+    <div class="container" id="personObject">
+        <h2>Person Object</h2>
+        <input type="text" id="firstNameInput" placeholder="Enter first name">
+        <input type="text" id="lastNameInput" placeholder="Enter last name">
+        <input type="number" id="ageInput" placeholder="Enter age">
+        <button onclick="createPerson()">Create Person</button>
+        <button id="showInfoBtn" onclick="showPersonInfo()" disabled>Show Person Info</button>
+        <button id="incrementAgeBtn" onclick="incrementAge()" disabled>Increment Age</button>
+        <div class="result" id="personResult"></div>
+        <div class="error" id="errorMessage"></div>
+    </div>
+
+    <!-- Sum of Even Numbers Section -->
+    <div class="container" id="sumEvenNumbers">
+        <h2>Sum of Even Numbers</h2>
+        <input type="text" id="arrayInput" placeholder="Enter numbers separated by commas (e.g., 1,2,3,4)">
+        <button onclick="calculateSum()">Calculate Sum</button>
+        <div class="error" id="errorMessage"></div>
+        <div class="result" id="sumResult"></div>
+    </div>
+
+    <script>
+        // Navigation Logic
+        function showPage(pageId) {
+            document.getElementById('calculator').style.display = 'none';
+            document.getElementById('personObject').style.display = 'none';
+            document.getElementById('sumEvenNumbers').style.display = 'none';
+            document.getElementById(pageId).style.display = 'block';
+        }
+
+        // Show calculator section by default
+        showPage('calculator');
+
+        // Calculator logic
+        const calculator = {
+            num1: document.getElementById('num1'),
+            num2: document.getElementById('num2'),
+            operator: document.getElementById('operator'),
+            resultElement: document.getElementById('calcResult'),
+
+            calculate() {
+                const num1 = parseFloat(this.num1.value);
+                const num2 = parseFloat(this.num2.value);
+                const operator = this.operator.value;
+                let result;
+
+                if (isNaN(num1) || isNaN(num2)) {
+                    this.resultElement.innerHTML = '<span class="error">Error: Please enter valid numbers</span>';
+                    return;
+                }
+
+                switch (operator) {
+                    case '+':
+                        result = num1 + num2;
+                        break;
+                    case '-':
+                        result = num1 - num2;
+                        break;
+                    case '*':
+                        result = num1 * num2;
+                        break;
+                    case '/':
+                        result = num2 === 0 ? 'Error: Division by zero' : num1 / num2;
+                        break;
+                    default:
+                        this.resultElement.innerHTML = '<span class="error">Error: Invalid operator</span>';
+                        return;
+                }
+                this.resultElement.innerHTML = `Result: ${result}`;
+            }
+        };
+
+        // Person Object logic
+        let Person = null;
+
+        function createPerson() {
+            const firstName = document.getElementById('firstNameInput').value.trim();
+            const lastName = document.getElementById('lastNameInput').value.trim();
+            const age = parseInt(document.getElementById('ageInput').value.trim(), 10);
+
+            const errorMessage = document.getElementById('errorMessage');
+            const personResult = document.getElementById('personResult');
+
+            errorMessage.innerText = '';
+            personResult.innerText = '';
+
+            if (!firstName) {
+                errorMessage.innerText = 'Please enter a valid first name.';
+                return;
+            }
+            if (!lastName) {
+                errorMessage.innerText = 'Please enter a valid last name.';
+                return;
+            }
+            if (isNaN(age) || age < 0) {
+                errorMessage.innerText = 'Please enter a valid age.';
+                return;
+            }
+
+            Person = {
+                firstName: firstName,
+                lastName: lastName,
+                age: age,
+                getFullName: function () {
+                    return `${this.firstName} ${this.lastName}`;
+                },
+                incrementAge: function () {
+                    this.age += 1;
+                }
+            };
+
+            personResult.innerText = `Person created: ${Person.getFullName()}, Age: ${Person.age}`;
+            document.getElementById('showInfoBtn').disabled = false;
+            document.getElementById('incrementAgeBtn').disabled = false;
+        }
+
+        function showPersonInfo() {
+            if (Person) {
+                document.getElementById('personResult').innerText = `Full Name: ${Person.getFullName()}, Age: ${Person.age}`;
+            } else {
+                document.getElementById('errorMessage').innerText = 'Error: Person object not created yet.';
+            }
+        }
+
+        function incrementAge() {
+            if (Person) {
+                Person.incrementAge();
+                showPersonInfo();
+            } else {
+                document.getElementById('errorMessage').innerText = 'Error: Person object not created yet.';
+            }
+        }
+
+        // Sum of Even Numbers logic
+        function calculateSum() {
+            const arrayInput = document.getElementById('arrayInput').value;
+            const errorMessage = document.getElementById('errorMessage');
+            const sumResult = document.getElementById('sumResult');
+
+            // Clear previous results
+            errorMessage.innerText = '';
+            sumResult.innerText = '';
+
+            // Validate input
+            if (!arrayInput) {
+                errorMessage.innerText = 'Please enter some numbers.';
+                return;
+            }
+
+            const numbers = arrayInput.split(',').map(item => item.trim());
+            let sum = 0;
+
+            for (let i = 0; i < numbers.length; i++) {
+                const num = Number(numbers[i]);
+                if (isNaN(num)) {
+                    errorMessage.innerText = 'Invalid input. Please enter only numbers separated by commas.';
+                    return;
+                }
+                if (num % 2 === 0) {
+                    sum += num;
+                }
+            }
+
+            sumResult.innerText = `Sum of even numbers: ${sum}`;
+        }
+    </script>
+
+</body>
+
+</html>
