@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -123,8 +124,9 @@
         <input type="text" id="lastNameInput" placeholder="Enter last name">
         <input type="number" id="ageInput" placeholder="Enter age">
         <button onclick="createPerson()">Create Person</button>
-        <button id="showInfoBtn" onclick="showPersonInfo()" disabled>Show Person Info</button>
-        <button id="incrementAgeBtn" onclick="incrementAge()" disabled>Increment Age</button>
+        <button id="showInfoBtn" onclick="showPersonInfo()" disabled>Show Last Person Info</button>
+        <button id="incrementAgeBtn" onclick="incrementAge()" disabled>Increment Last Person's Age</button>
+        <button id="showAllInfoBtn" onclick="showAllPersonsInfo()" disabled>Show All Persons Info</button>
         <div class="result" id="personResult"></div>
         <div class="error" id="errorMessage"></div>
     </div>
@@ -190,19 +192,19 @@
         };
 
         // Person Object logic
-        let Person = null;
+        let personList = [];
 
         function createPerson() {
             const firstName = document.getElementById('firstNameInput').value.trim();
             const lastName = document.getElementById('lastNameInput').value.trim();
             const age = parseInt(document.getElementById('ageInput').value.trim(), 10);
-
+    
             const errorMessage = document.getElementById('errorMessage');
             const personResult = document.getElementById('personResult');
-
+    
             errorMessage.innerText = '';
             personResult.innerText = '';
-
+    
             if (!firstName) {
                 errorMessage.innerText = 'Please enter a valid first name.';
                 return;
@@ -215,8 +217,8 @@
                 errorMessage.innerText = 'Please enter a valid age.';
                 return;
             }
-
-            Person = {
+    
+            const person = {
                 firstName: firstName,
                 lastName: lastName,
                 age: age,
@@ -227,26 +229,47 @@
                     this.age += 1;
                 }
             };
-
-            personResult.innerText = `Person created: ${Person.getFullName()}, Age: ${Person.age}`;
+    
+            personList.push(person);
+    
+            personResult.innerText = `Person created: ${person.getFullName()}, Age: ${person.age}`;
             document.getElementById('showInfoBtn').disabled = false;
             document.getElementById('incrementAgeBtn').disabled = false;
+            document.getElementById('showAllInfoBtn').disabled = false;
+    
+            // Clear the input fields
+            document.getElementById('firstNameInput').value = '';
+            document.getElementById('lastNameInput').value = '';
+            document.getElementById('ageInput').value = '';
         }
-
+    
         function showPersonInfo() {
-            if (Person) {
-                document.getElementById('personResult').innerText = `Full Name: ${Person.getFullName()}, Age: ${Person.age}`;
+            if (personList.length > 0) {
+                const lastPerson = personList[personList.length - 1];
+                document.getElementById('personResult').innerText = `Full Name: ${lastPerson.getFullName()}, Age: ${lastPerson.age}`;
             } else {
-                document.getElementById('errorMessage').innerText = 'Error: Person object not created yet.';
+                document.getElementById('errorMessage').innerText = 'Error: No person objects available.';
             }
         }
-
+    
         function incrementAge() {
-            if (Person) {
-                Person.incrementAge();
+            if (personList.length > 0) {
+                const lastPerson = personList[personList.length - 1];
+                lastPerson.incrementAge();
                 showPersonInfo();
             } else {
-                document.getElementById('errorMessage').innerText = 'Error: Person object not created yet.';
+                document.getElementById('errorMessage').innerText = 'Error: No person objects available.';
+            }
+        }
+    
+        function showAllPersonsInfo() {
+            const personResult = document.getElementById('personResult');
+            if (personList.length > 0) {
+                personResult.innerHTML = personList.map((person, index) => 
+                    `Person ${index + 1}: ${person.getFullName()}, Age: ${person.age}`
+                ).join('<br>');
+            } else {
+                document.getElementById('errorMessage').innerText = 'Error: No person objects available.';
             }
         }
 
